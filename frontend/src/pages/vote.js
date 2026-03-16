@@ -1,6 +1,6 @@
 // src/pages/vote.js
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://verivotex-2.onrender.com';
 
 // State
 let currentVoterID = null;

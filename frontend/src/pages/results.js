@@ -16,7 +16,7 @@ async function loadResults() {
   hideAlert('results-alert');
 
   try {
-    const res = await fetch('http://localhost:3000/results');
+    const res = await fetch('https://verivotex-2.onrender.com/results');
     const data = await res.json();
     renderResults(data);
   } catch (err) {

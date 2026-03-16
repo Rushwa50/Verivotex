@@ -13,7 +13,7 @@ async function loadAudit() {
   `;
 
   try {
-    const res = await fetch('http://localhost:3000/votes');
+    const res = await fetch('https://verivotex-2.onrender.com/votes');
     const data = await res.json();
     renderChain(data);
   } catch (err) {

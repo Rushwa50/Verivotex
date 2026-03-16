@@ -1,6 +1,6 @@
 // src/services/api.js
 // Base URL of the Express backend
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://verivotex-2.onrender.com";
 
 /**
  * Login with a Voter ID
