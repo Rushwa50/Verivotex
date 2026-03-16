@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VoteChain — Verifiable Digital Voting</title>
+  <link rel="stylesheet" href="src/styles/main.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗳️</text></svg>" />
+</head>
+<body>
+
+  <!-- ============ NAVBAR ============ -->
+  <div class="container">
+    <nav class="navbar">
+      <a href="#" class="navbar-brand" style="flex:1; justify-content:center;" onclick="navigate('home'); return false;">
+        <div class="logo-icon">🗳</div>
+          <div>
+            <span style="font-size:2.8rem; font-weight:800; color:#00ffaa; -webkit-text-fill-color:#00ffaa;">VeriVotex</span>
+            <span class="brand-sub">SHA-256 Secured</span>
+          </div>
+    </a>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div class="navbar-status">
+          <span class="status-dot"></span>
+          <span id="nav-status">System Online</span>
+        </div>
+        <div class="navbar-voter" id="navbar-voter-badge"></div>
+        <button class="btn btn-outline" id="logout-btn" style="display:none; padding:8px 16px; font-size:0.8rem;" onclick="logout()">
+          Logout
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ============ PAGE: HOME ============ -->
+  <div class="page active" id="page-home">
+    <div class="container">
+      <section class="hero">
+        <div class="hero-eyebrow">FOOL PROOF ELECTION SYSTEM</div>
+        <h1 class="hero-title">
+          Your Vote.<br>
+          <span class="highlight">Cryptographically</span> Sealed.
+        </h1>
+        <p class="hero-subtitle">
+          Every ballot is hashed and chained to the previous one. Any tampering instantly breaks the chain — making fraud mathematically impossible to hide.
+        </p>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <button class="btn btn-primary" style="width:auto; padding:14px 36px;" onclick="navigate('vote')">
+            Cast Your Vote
+          </button>
+          <button class="btn btn-outline" style="padding:14px 36px;" onclick="navigate('results')">
+            View Results
+          </button>
+        </div>
+      </section>
+
+      <!-- Stats -->
+      <div class="stats-bar" id="home-stats">
+        <div class="stat-item">
+          <span class="stat-number" id="stat-total-votes">0</span>
+          <span class="stat-label">Votes Recorded</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number" id="stat-candidates">5</span>
+          <span class="stat-label">Candidates</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">SHA-256</span>
+          <span class="stat-label">Hash Algorithm</span>
+        </div>
+      </div>
+
+      <!-- Feature cards -->
+      <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:20px; padding-bottom:60px;">
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:14px;">🔗</div>
+          <div class="card-title">Immutable Chain</div>
+          <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.7; margin-top:8px;">Each vote includes the hash of the previous vote, creating an unbreakable cryptographic chain of custody.</p>
+        </div>
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:14px;">🛡️</div>
+          <div class="card-title">Tamper-Proof</div>
+          <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.7; margin-top:8px;">Any modification to a recorded vote changes its hash and breaks the chain — making fraud immediately detectable.</p>
+        </div>
+        <div class="card">
+          <div style="font-size:2rem; margin-bottom:14px;">🔎</div>
+          <div class="card-title">Transparent Audit</div>
+          <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.7; margin-top:8px;">The full vote chain is publicly auditable. Anyone can verify the integrity of every block in the sequence.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: VOTE ============ -->
+  <div class="page" id="page-vote">
+    <div class="container" style="max-width:700px; padding-top:48px; padding-bottom:60px;">
+
+      <!-- Step 1: Login -->
+      <div id="vote-step-login">
+        <div class="section-header">
+          <h2 class="section-title">Voter Authentication</h2>
+          <span class="section-badge">Step 1 of 2</span>
+        </div>
+        <div class="card">
+          <div class="card-subtitle">Enter Voter Credentials</div>
+          <div id="login-alert" class="alert"></div>
+          <div class="form-group">
+            <label class="form-label" for="voter-id-input">Voter ID</label>
+            <input class="form-input" id="voter-id-input" type="text" placeholder="e.g. V001" autocomplete="off" />
+          </div>
+          <button class="btn btn-primary" id="login-btn" onclick="handleLogin()">
+            Authenticate &amp; Continue
+          </button>
+          <p style="text-align:center; margin-top:16px; font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted);">
+            Your voter ID is only used to prevent duplicate voting.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 2: Cast Vote -->
+      <div id="vote-step-cast" style="display:none;">
+        <div class="section-header">
+          <h2 class="section-title">Cast Your Vote</h2>
+          <span class="section-badge" id="vote-step-badge">Step 2 of 2</span>
+        </div>
+        <div class="card">
+          <div class="card-subtitle">Select One Candidate</div>
+          <div id="vote-alert" class="alert"></div>
+
+          <div class="candidate-grid" id="candidate-grid">
+            <!-- Candidates are injected by JS -->
+          </div>
+
+          <hr class="divider" />
+
+          <div style="display:flex; gap:12px;">
+            <button class="btn btn-outline" style="flex:0 0 auto;" onclick="backToLogin()">← Back</button>
+            <button class="btn btn-primary" id="cast-vote-btn" onclick="handleCastVote()" disabled>
+              Submit Vote Securely
+            </button>
+          </div>
+          <p style="text-align:center; margin-top:14px; font-family:var(--font-mono); font-size:0.7rem; color:var(--text-muted);">
+            Once submitted, your vote is permanently recorded to the chain.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 3: Confirmation -->
+      <div id="vote-step-done" style="display:none;">
+        <div class="card" style="text-align:center; padding:48px 32px;">
+          <div style="font-size:3.5rem; margin-bottom:20px;">✅</div>
+          <h2 style="font-size:1.8rem; font-weight:800; margin-bottom:10px;">Vote Recorded!</h2>
+          <p style="color:var(--text-secondary); margin-bottom:28px; line-height:1.7;">
+            Your vote has been cryptographically sealed and added to the chain.
+          </p>
+          <div style="background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; text-align:left; margin-bottom:24px;">
+            <div class="block-row"><span class="block-label">Voter ID</span><span class="block-value voter" id="confirm-voter"></span></div>
+            <div class="block-row"><span class="block-label">Candidate</span><span class="block-value" id="confirm-candidate"></span></div>
+            <div class="block-row"><span class="block-label">Timestamp</span><span class="block-value" id="confirm-timestamp"></span></div>
+            <div class="block-row"><span class="block-label">Block Hash</span><span class="block-value hash" id="confirm-hash"></span></div>
+          </div>
+          <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="navigate('results')">View Results</button>
+            <button class="btn btn-outline" onclick="navigate('audit')">Inspect Chain</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ PAGE: RESULTS ============ -->
+  <div class="page" id="page-results">
+    <div class="container" style="max-width:700px; padding-top:48px; padding-bottom:60px;">
+      <div class="section-header">
+        <h2 class="section-title">Live Results</h2>
+        <button class="btn btn-outline" style="padding:8px 16px; font-size:0.8rem;" onclick="loadResults()">
+          ↻ Refresh
+        </button>
+      </div>
+      <div class="card" id="results-card">
+        <div class="card-subtitle">Vote Tally · Real-Time</div>
+        <div id="results-alert" class="alert"></div>
+        <div id="results-list" class="results-list">
+          <div class="empty-state">
+            <span class="empty-icon">📊</span>
+            <p>No votes recorded yet.</p>
+          </div>
+        </div>
+        <hr class="divider" />
+        <div style="display:flex; justify-content:space-between; align-items:center; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted);">
+          <span id="results-total-label">Total Votes: 0</span>
+          <span id="results-timestamp"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE: AUDIT ============ -->
+  <div class="page" id="page-audit">
+    <div class="container" style="max-width:800px; padding-top:48px; padding-bottom:60px;">
+      <div class="section-header">
+        <h2 class="section-title">Blockchain Audit Trail</h2>
+        <button class="btn btn-outline" style="padding:8px 16px; font-size:0.8rem;" onclick="loadAudit()">
+          ↻ Refresh
+        </button>
+      </div>
+      <div style="background:rgba(0,238,255,0.06); border:1px solid rgba(0,238,255,0.15); border-radius:var(--radius); padding:14px 18px; margin-bottom:24px; font-size:0.83rem; color:var(--accent-secondary); font-family:var(--font-mono);">
+        ℹ Each block contains the SHA-256 hash of the previous block. Any tampering breaks the chain and is immediately visible.
+      </div>
+      <div id="chain-container" class="chain-container">
+        <div class="empty-state">
+          <span class="empty-icon">🔗</span>
+          <p>No votes in chain yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <nav style="position:fixed; bottom:0; left:0; right:0; background:rgba(10,12,16,0.95); backdrop-filter:blur(16px); border-top:1px solid var(--border); z-index:100;">
+    <div class="container">
+      <div style="display:flex; gap:0;">
+        <button class="tab active" id="tab-home" onclick="navigate('home')">🏠 Home</button>
+        <button class="tab" id="tab-vote" onclick="navigate('vote')">🗳 Vote</button>
+        <button class="tab" id="tab-results" onclick="navigate('results')">📊 Results</button>
+        <button class="tab" id="tab-audit" onclick="navigate('audit')">🔗 Audit</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Bottom spacer so content isn't hidden behind nav -->
+  <div style="height:72px;"></div>
+
+  <!-- ============ MAIN APP SCRIPT ============ -->
+  <script src="src/utils/helpers.js"></script>
+  <script src="src/components/candidateCard.js"></script>
+  <script src="src/components/blockCard.js"></script>
+  <script src="src/components/resultBar.js"></script>
+  <script src="src/pages/vote.js"></script>
+  <script src="src/pages/results.js"></script>
+  <script src="src/pages/audit.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>

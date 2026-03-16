@@ -1,0 +1,184 @@
+/* --- Global & Theme Variables --- */
+:root {
+  --bg-dark: #0f172a;
+  --bg-panel: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --primary-accent: #6366f1; /* Purple/Blue */
+  --success-color: #10b981; /* Green */
+  --warning-color: #f59e0b; /* Orange/Gold */
+  --border-color: #334155;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Layout --- */
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+  border-bottom: 2px solid var(--primary-accent);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: 1px;
+}
+
+.app-header p {
+  margin: 5px 0 0 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem 1rem;
+}
+
+/* --- Reusable Container --- */
+.container {
+  background-color: var(--bg-panel);
+  max-width: 600px; /* Overridden inline in ResultPage to 800px */
+  margin: 0 auto;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+}
+
+.container h2 {
+  margin-top: 0;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+}
+
+/* --- Forms & Inputs --- */
+input[type="text"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* --- Buttons --- */
+button {
+  background-color: var(--primary-accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: #4f46e5;
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* --- Candidate Cards (Overrides for inline styles) --- */
+.candidate-card {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-color) !important;
+  transition: all 0.3s ease;
+}
+
+.candidate-card:hover {
+  border-color: var(--primary-accent) !important;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+}
+
+.candidate-card h3 {
+  color: var(--text-main) !important;
+}
+
+.candidate-card p {
+  color: var(--text-muted) !important;
+}
+
+/* --- Animations for Confirmation Page --- */
+.animating {
+  background-color: var(--warning-color) !important;
+  animation: pulse-glow 1.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(245, 158, 11, 0);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+    transform: scale(1);
+  }
+}
+
+/* --- Ledger & Audit Trail --- */
+.ledger > div {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  padding: 20px !important;
+}
+
+.ledger h4 {
+  color: var(--primary-accent) !important;
+}
+
+/* Overriding the inline backgrounds for hash boxes to fit the dark theme */
+.ledger div > div[style*="background-color"] {
+  background-color: #020617 !important;
+  border: 1px solid #1e293b;
+}
+
+.ledger span[style*="color: #27ae60"] {
+  color: var(--success-color) !important;
+}
+
+/* Success Banner Override */
+div[style*="background-color: #d4edda"] {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  border-color: var(--success-color) !important;
+  color: var(--success-color) !important;
+}
+

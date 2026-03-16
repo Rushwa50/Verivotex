@@ -1,0 +1,12 @@
+{
+  "name": "digital-voting-frontend",
+  "version": "1.0.0",
+  "description": "Verifiable Digital Voting System - Frontend",
+  "scripts": {
+    "start": "live-server --port=5000 --open=index.html",
+    "dev": "npx serve . -p 5000"
+  },
+  "keywords": ["voting", "blockchain", "sha256"],
+  "author": "",
+  "license": "ISC"
+}
