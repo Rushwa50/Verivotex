@@ -6,6 +6,8 @@
   <title>VoteChain — Verifiable Digital Voting</title>
   <link rel="stylesheet" href="src/styles/main.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗳️</text></svg>" />
+  <!-- Google Identity Services Script -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -102,17 +104,15 @@
           <span class="section-badge">Step 1 of 2</span>
         </div>
         <div class="card">
-          <div class="card-subtitle">Enter Voter Credentials</div>
+          <div class="card-subtitle">Login via Google OAuth</div>
           <div id="login-alert" class="alert"></div>
-          <div class="form-group">
-            <label class="form-label" for="voter-id-input">Voter ID</label>
-            <input class="form-input" id="voter-id-input" type="text" placeholder="e.g. V001" autocomplete="off" />
+          
+          <div id="google-login-section" style="text-align: center; margin-top: 20px; display: flex; justify-content: center;">
+            <div id="google-button-container" style="width: 100%;"></div>
           </div>
-          <button class="btn btn-primary" id="login-btn" onclick="handleLogin()">
-            Authenticate &amp; Continue
-          </button>
-          <p style="text-align:center; margin-top:16px; font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted);">
-            Your voter ID is only used to prevent duplicate voting.
+
+          <p style="text-align:center; margin-top:20px; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted);">
+            Your Google Account provides a secure, passwordless authentication.
           </p>
         </div>
       </div>

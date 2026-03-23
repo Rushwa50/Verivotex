@@ -2,6 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const votes = require("./votes");
 const generateHash = require("./hash");
+const { OAuth2Client } = require('google-auth-library');
+
+// REPLACE THIS WITH YOUR REAL GOOGLE CLIENT ID
+const GOOGLE_CLIENT_ID = "667473584175-47gc1jmc0ee8v4ot768gd8gqddapjafv.apps.googleusercontent.com";
+const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 const app = express();
 
@@ -13,21 +18,31 @@ const PORT = process.env.PORT || 3000;
 app.get("/", (req, res) => {
     res.send("Digital Voting Backend Running");
 });
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
+    const { credential } = req.body;
 
-    const { voterID } = req.body;
-
-    if (!voterID) {
-        return res.status(400).json({
-            message: "Voter ID is required"
-        });
+    if (!credential) {
+        return res.status(400).json({ message: "Google credential token is required" });
     }
 
-    res.json({
-        message: "Login successful",
-        voterID: voterID
-    });
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: GOOGLE_CLIENT_ID,
+        });
 
+        const payload = ticket.getPayload();
+        // Fallback to 'sub' (the unique account ID) if email is somehow missing
+        const voterID = payload.email || payload.sub;
+
+        res.json({
+            message: "Login successful",
+            voterID: voterID
+        });
+    } catch (err) {
+        console.error("Token verification failed:", err);
+        res.status(401).json({ message: "Invalid Google token. Please try again." });
+    }
 });
 app.post("/vote", (req, res) => {
 

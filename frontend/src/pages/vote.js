@@ -1,47 +1,71 @@
 // src/pages/vote.js
 
-const BASE_URL = 'https://verivotex-2.onrender.com';
+const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : 'https://verivotex-2.onrender.com';
 
 // State
 let currentVoterID = null;
 let selectedCandidateID = null;
 
-/**
- * Called when voter submits their ID
- */
-async function handleLogin() {
-  const input = document.getElementById('voter-id-input');
-  const voterID = input.value.trim();
+// REPLACE THIS WITH YOUR REAL GOOGLE CLIENT ID
+const GOOGLE_CLIENT_ID = "667473584175-47gc1jmc0ee8v4ot768gd8gqddapjafv.apps.googleusercontent.com";
 
-  if (!voterID) {
-    showAlert('login-alert', 'error', 'Please enter your Voter ID.');
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('google-button-container')) {
+    renderGoogleButton();
+  }
+});
+
+function renderGoogleButton() {
+  if (typeof google === 'undefined' || !google.accounts) {
+    setTimeout(renderGoogleButton, 100);
     return;
   }
 
-  setLoading('login-btn', true, 'Authenticate & Continue');
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleLogin
+  });
 
-  try {
-    const res = await fetch(`${BASE_URL}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ voterID }),
-    });
+  google.accounts.id.renderButton(
+    document.getElementById("google-button-container"),
+    { theme: "outline", size: "large", width: "100%" }
+  );
+}
 
-    const data = await res.json();
+/**
+ * Triggered automatically by Google upon successful Sign-In
+ */
+async function handleGoogleLogin(response) {
+  const credential = response.credential;
 
-    if (res.ok) {
-      currentVoterID = voterID;
-      // Store in sessionStorage so it persists across navigation
-      sessionStorage.setItem('voterID', voterID);
-      showVotingStep();
-    } else {
-      showAlert('login-alert', 'error', data.message || 'Login failed.');
-    }
-  } catch (err) {
-    showAlert('login-alert', 'error', 'Cannot reach server. Is the backend running on port 3000?');
+  if (!credential) {
+    showAlert('login-alert', 'error', 'Google authentication failed. No credential received.');
+    return;
   }
 
-  setLoading('login-btn', false, 'Authenticate & Continue');
+  try {
+    const loginRes = await fetch(`${BASE_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential })
+    });
+
+    const loginData = await loginRes.json();
+
+    if (loginRes.ok) {
+      currentVoterID = loginData.voterID;
+      sessionStorage.setItem('voterID', currentVoterID);
+      hideAlert('login-alert');
+      showVotingStep();
+    } else {
+      showAlert('login-alert', 'error', loginData.message || 'Verification failed.');
+    }
+  } catch (err) {
+    console.error("Google Login Error:", err);
+    showAlert('login-alert', 'error', 'Failed to reach server. Is backend running on port 3000?');
+  }
 }
 
 /**
@@ -131,7 +155,6 @@ function backToLogin() {
   document.getElementById('vote-step-cast').style.display = 'none';
   document.getElementById('vote-step-done').style.display = 'none';
   document.getElementById('vote-step-login').style.display = 'block';
-  document.getElementById('voter-id-input').value = '';
   hideAlert('login-alert');
 }
 

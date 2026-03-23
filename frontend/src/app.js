@@ -47,7 +47,8 @@ function navigate(page) {
  */
 async function loadHomeStats() {
   try {
-    const res = await fetch('http://localhost:3000/votes');
+    const baseUrl = typeof BASE_URL !== 'undefined' ? BASE_URL : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://verivotex-2.onrender.com');
+    const res = await fetch(`${baseUrl}/votes`);
     const votes = await res.json();
     const el = document.getElementById('stat-total-votes');
     if (el) el.textContent = votes.length;
